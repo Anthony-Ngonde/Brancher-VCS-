@@ -33,8 +33,15 @@ class Brancher{
         console.log(fileHash); 
         const newFileHashedObjetcPath = path.join(this.objetcsPath, fileHash); // .brancher/objects/abc123
         await fs.writeFile(newFileHashedObjetcPath, fileData);
-        // One step missing: Add the file to staging area
+        await this.updateStagingArea(fileToBeAdded, fileHash);
         console.log(`Added ${fileToBeAdded}`);
+    }
+
+    async updateStagingArea(filePath, fileHash) {
+        const index = JSON.parse(await fs.readFile(this.indexPath, { encoding: 'utf-8' })); //read the index file
+        index.push({ path: filePath, hash: fileHash }); // add the file to the index
+        await fs.writeFile(this.indexPath, JSON.stringify(index)); // write the updated index file
+
     }
 }
 
