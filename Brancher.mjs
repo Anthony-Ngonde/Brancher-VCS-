@@ -80,6 +80,8 @@ class Brancher{
         while(currentCommitHash) {
             const commitData = JSON.parse(await fs.readFile(path.join(this.objectsPath, currentCommitHash), { encoding: 'utf-8' }));
 
+
+            console.log(`----------------\n`)
             console.log(`Commit: ${currentCommitHash}\nDate: ${commitData.timeStamp}\n\n${commitData.message}\n\n`);
 
             currentCommitHash = commitData.parent;
@@ -90,7 +92,7 @@ class Brancher{
 (async () => {
     const brancher = new Brancher();
     await brancher.add('sample.txt');
-    await brancher.commit('Second commit');
+    await brancher.commit('Third commit');
 
     await brancher.log();
 })();
