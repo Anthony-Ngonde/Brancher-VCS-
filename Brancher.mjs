@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs/promises'
 import crypto from 'crypto'
+// import { timeStamp } from 'console';
 
 class Brancher{
 
@@ -43,7 +44,39 @@ class Brancher{
         await fs.writeFile(this.indexPath, JSON.stringify(index)); // write the updated index file
 
     }
-}
 
-const brancher = new Brancher();
-brancher.add('sample.txt')
+    async commit (message) {
+        const index = JSON.parse(await fs.readFile(this.indexPath, { encoding: 'utf-8' }));
+        const parentCommit = await this.getCurrentHead();
+
+        const commitData = {
+            timeStamp: new Date().toISOString(),
+            message,
+            files: index,
+            parent: parentCommit
+        };
+
+        const commitHash = this.hashObject(JSON.stringify(commitData));
+        const commitPath = path.join(this.objetcsPath, commitHash);
+        await fs.writeFile(commitPath, JSON.stringify(commitData));
+        await fs.writeFile(this.headPath, commitHash); // update the HEAD to point to the new commit
+        await fs.writeFile(this.indexPath, JSON.stringify([])); // clear the staging area
+        console.log(`Commit successfully created: ${commitHash}`);
+
+    }
+
+    async getCurrentHead() {
+        try {
+            return await fs.readFile(this.headPath, { encoding: 'utf-8' });
+        } catch(error) {
+            return null;
+        }
+            
+        
+    }
+}
+(async () => {
+    const brancher = new Brancher();
+    await brancher.add('sample.txt');
+    await brancher.commit('initial commit');
+})();
