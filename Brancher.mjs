@@ -148,9 +148,10 @@ class Brancher {
 
 (async () => {
     const brancher = new Brancher();
-    // Example usage:
-    // await brancher.add('sample.txt');
-    // await brancher.commit('Third commit');
-    // await brancher.log();
-    await brancher.showCommitDiff('b535f3fc46973dfdeeb9ad2e024668a795820a23');
+    await brancher.add('sample.txt');
+    await brancher.add('sample2.txt');
+    await brancher.commit('Fourth commit');
+
+    await brancher.log();
+    // await brancher.showCommitDiff('b535f3fc46973dfdeeb9ad2e024668a795820a23');
 })();
