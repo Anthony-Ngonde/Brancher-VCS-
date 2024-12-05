@@ -1,8 +1,13 @@
-import path from 'path'
-import fs from 'fs/promises'
-import crypto from 'crypto'
+#!/usr/bin/env node
+
+import path from 'path';
+import fs from 'fs/promises';
+import crypto, { Hash } from 'crypto';
 import { diffLines } from 'diff';
-import chalk from "chalk"
+import chalk from 'chalk';
+import { Command } from 'commander';
+
+const program = new Command();
 
 
 class Brancher {
@@ -103,10 +108,12 @@ class Brancher {
                     console.log('\nDiff:');
                     const diff = diffLines(parentFileContent, fileContent);
 
+                    // console.log(diff)
+
                     diff.forEach(part => {
                         if (part.added) {
-                            process.stdout.write(chalk.green(part.value));
-                        } else if (part.removed) {
+                            process.stdout.write(chalk.green("++" + part.value));
+                        } else if ("--" + part.removed) {
                             process.stdout.write(chalk.red(part.value));
                         } else {
                             process.stdout.write(chalk.grey(part.value));
@@ -146,12 +153,39 @@ class Brancher {
     }
 }
 
-(async () => {
-    const brancher = new Brancher();
-    await brancher.add('sample.txt');
-    await brancher.add('sample2.txt');
-    await brancher.commit('Fourth commit');
+// (async () => {
+//     const brancher = new Brancher();
+//     // await brancher.add('sample.txt');
+//     // await brancher.add('sample2.txt');
+//     // await brancher.commit('Fourth commit');
 
+//     // await brancher.log();
+//     await brancher.showCommitDiff('43b14ff1bab6f0b6bfddfd75528f0ed022f1ef6f');
+// })();
+
+program.command('init').action(async() => {
+    const brancher = new Brancher();
+});
+
+program.command('add <file>').action(async (file) => {
+    const brancher = new Brancher();
+    await brancher.add(file);
+});
+
+program.command('commit <message>').action(async (message) => {
+    const brancher = new Brancher();
+    await brancher.commit(message);
+});
+
+program.command('log').action(async () => {
+    const brancher = new Brancher();
     await brancher.log();
-    // await brancher.showCommitDiff('b535f3fc46973dfdeeb9ad2e024668a795820a23');
-})();
+});
+
+program.command('show <commitHash>').action(async (commitHash) => {
+    const brancher = new Brancher();
+    await brancher.showCommitDiff(commitHash);
+});
+
+console.log(process.argv);
+// program.parse(process.argv);
