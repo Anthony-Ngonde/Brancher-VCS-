@@ -1,30 +1,30 @@
 node_modules
 
+
 # #!/usr/bin/env node
 
 # import path from 'path';
 # import fs from 'fs/promises';
-# import crypto, { Hash } from 'crypto';
+# import crypto from 'crypto';
 # import { diffLines } from 'diff';
 # import chalk from 'chalk';
 # import { Command } from 'commander';
 
 # const program = new Command();
 
-
 # class Brancher {
 #     constructor(repoPath = '.') {
 #         this.repoPath = path.join(repoPath, '.brancher');
-#         this.objectsPath = path.join(this.repoPath, 'objects'); // .brancher/objects
-#         this.headPath = path.join(this.repoPath, 'HEAD'); // .brancher/HEAD
-#         this.indexPath = path.join(this.repoPath, 'index'); // .brancher/index
+#         this.objectsPath = path.join(this.repoPath, 'objects'); 
+#         this.headPath = path.join(this.repoPath, 'HEAD'); 
+#         this.indexPath = path.join(this.repoPath, 'index'); 
 #         this.init();
 #     }
 
 #     async init() {
 #         await fs.mkdir(this.objectsPath, { recursive: true });
 #         try {
-#             await fs.writeFile(this.headPath, '', { flag: 'wx' }); // wx: fails if file exists
+#             await fs.writeFile(this.headPath, '', { flag: 'wx' }); 
 #             await fs.writeFile(this.indexPath, JSON.stringify([]), { flag: 'wx' });
 #         } catch {
 #             console.log('Already initialized the .brancher folder');
@@ -110,18 +110,16 @@ node_modules
 #                     console.log('\nDiff:');
 #                     const diff = diffLines(parentFileContent, fileContent);
 
-#                     // console.log(diff)
-
 #                     diff.forEach(part => {
 #                         if (part.added) {
-#                             process.stdout.write(chalk.green("++" + part.value));
-#                         } else if ("--" + part.removed) {
+#                             process.stdout.write(chalk.green(part.value));
+#                         } else if (part.removed) {
 #                             process.stdout.write(chalk.red(part.value));
 #                         } else {
 #                             process.stdout.write(chalk.grey(part.value));
 #                         }
 #                     });
-#                     console.log(); // new line
+#                     console.log(); 
 #                 } else {
 #                     console.log('New file in this commit');
 #                 }
@@ -155,17 +153,7 @@ node_modules
 #     }
 # }
 
-# // (async () => {
-# //     const brancher = new Brancher();
-# //     // await brancher.add('sample.txt');
-# //     // await brancher.add('sample2.txt');
-# //     // await brancher.commit('Fourth commit');
-
-# //     // await brancher.log();
-# //     await brancher.showCommitDiff('43b14ff1bab6f0b6bfddfd75528f0ed022f1ef6f');
-# // })();
-
-# program.command('init').action(async() => {
+# program.command('init').action(async () => {
 #     const brancher = new Brancher();
 # });
 
@@ -189,5 +177,10 @@ node_modules
 #     await brancher.showCommitDiff(commitHash);
 # });
 
-# // console.log(process.argv);
 # program.parse(process.argv);
+
+
+
+
+
+

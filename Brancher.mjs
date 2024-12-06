@@ -1,36 +1,33 @@
 #!/usr/bin/env node
 import path from 'path';
 import fs from 'fs/promises';
-import crypto, { Hash } from 'crypto';
+import crypto from 'crypto';
 import { diffLines } from 'diff';
 import chalk from 'chalk';
 import { Command } from 'commander';
 
 const program = new Command();
 
-
 class Brancher {
     constructor(repoPath = '.') {
         this.repoPath = path.join(repoPath, '.brancher');
-        this.objectsPath = path.join(this.repoPath, 'objects'); 
-        this.headPath = path.join(this.repoPath, 'HEAD'); 
-        this.indexPath = path.join(this.repoPath, 'index'); 
-        this.refsPath = path.join(this.repoPath, 'refs'); 
+        this.objectsPath = path.join(this.repoPath, 'objects'); // .brancher/objects
+        this.headPath = path.join(this.repoPath, 'HEAD'); // .brancher/HEAD
+        this.indexPath = path.join(this.repoPath, 'index'); // .brancher/index
+        this.refsPath = path.join(this.repoPath, 'refs'); // .brancher/refs
         this.init();
     }
 
     async init() {
         await fs.mkdir(this.objectsPath, { recursive: true });
         await fs.mkdir(this.refsPath, { recursive: true });
-
-        
         try {
-            await fs.writeFile(this.headPath, 'refs/main', { flag: 'wx' }); 
+            await fs.writeFile(this.headPath, 'refs/main', { flag: 'wx' });
             await fs.writeFile(path.join(this.refsPath, 'main'), '', { flag: 'wx' });
             await fs.writeFile(this.indexPath, JSON.stringify([]), { flag: 'wx' });
-            console.log('Initialized a new repository')
+            console.log('Initialized a new repository.');
         } catch {
-            console.log('Repository already initialized');
+            console.log('Repository already initialized.');
         }
     }
 
@@ -39,9 +36,8 @@ class Brancher {
     }
 
     async add(fileToBeAdded) {
-        const fileData = await fs.readFile(fileToBeAdded, { encoding: 'utf-8' });
+        const fileData = await fs.readFile(fileToBeAdded, 'utf-8');
         const fileHash = this.hashObject(fileData);
-        console.log(fileHash);
 
         const newFileHashedObjectPath = path.join(this.objectsPath, fileHash);
         await fs.writeFile(newFileHashedObjectPath, fileData);
@@ -50,13 +46,13 @@ class Brancher {
     }
 
     async updateStagingArea(filePath, fileHash) {
-        const index = JSON.parse(await fs.readFile(this.indexPath, { encoding: 'utf-8' }));
+        const index = JSON.parse(await fs.readFile(this.indexPath, 'utf-8'));
         index.push({ path: filePath, hash: fileHash });
         await fs.writeFile(this.indexPath, JSON.stringify(index));
     }
 
     async commit(message) {
-        const index = JSON.parse(await fs.readFile(this.indexPath, { encoding: 'utf-8' }));
+        const index = JSON.parse(await fs.readFile(this.indexPath, 'utf-8'));
         const parentCommit = await this.getCurrentHead();
 
         const commitData = {
@@ -69,25 +65,24 @@ class Brancher {
         const commitHash = this.hashObject(JSON.stringify(commitData));
         const commitPath = path.join(this.objectsPath, commitHash);
         await fs.writeFile(commitPath, JSON.stringify(commitData));
-        await fs.writeFile(this.headPath, commitHash);
+        await this.updateCurrentBranch(commitHash);
         await fs.writeFile(this.indexPath, JSON.stringify([]));
         console.log(`Commit successfully created: ${commitHash}`);
     }
 
-    async getCurrentHead() {
-        const branch = await fs.readFile(this.headPath, 'utf-8');
-        if (branch) {
-            const commitHashPath = path.join(this.repoPath, branch);
-            if (await this.exists(commitHashPath)) {
-                return await fs.readFile(commitHashPath, 'utf-8');
-            } else {
-                console.error(`Missing commit file for ${branch}`);
-                return null;
-            }
+    async getFileContent(hash) {
+        const filePath = path.join(this.objectsPath, hash);
+        if (!(await this.exists(filePath))) {
+            throw new Error(`File with hash ${hash} does not exist.`);
         }
-        return null;
+        return await fs.readFile(filePath, 'utf-8');
     }
     
+
+    async getCurrentHead() {
+        const branch = await fs.readFile(this.headPath, 'utf-8');
+        return branch ? await fs.readFile(path.join(this.repoPath, branch), 'utf-8') : null;
+    }
 
     async updateCurrentBranch(commitHash) {
         const branch = await fs.readFile(this.headPath, 'utf-8');
@@ -97,7 +92,7 @@ class Brancher {
     async log() {
         let currentCommitHash = await this.getCurrentHead();
         while (currentCommitHash) {
-            const commitData = JSON.parse(await fs.readFile(path.join(this.objectsPath, currentCommitHash), { encoding: 'utf-8' }));
+            const commitData = JSON.parse(await fs.readFile(path.join(this.objectsPath, currentCommitHash), 'utf-8'));
             console.log('--------------------\n');
             console.log(`Commit: ${currentCommitHash}\nDate: ${commitData.timeStamp}\n\n${commitData.message}\n\n`);
             currentCommitHash = commitData.parent;
@@ -200,18 +195,16 @@ class Brancher {
     }
 }
 
-
-
-program.command('init').action(async() => {
+program.command('init').action(async () => {
     const brancher = new Brancher();
 });
 
-program.command('add <file>').action(async (file) => {
+program.command('add <file>').action(async file => {
     const brancher = new Brancher();
     await brancher.add(file);
 });
 
-program.command('commit <message>').action(async (message) => {
+program.command('commit <message>').action(async message => {
     const brancher = new Brancher();
     await brancher.commit(message);
 });
@@ -221,6 +214,27 @@ program.command('log').action(async () => {
     await brancher.log();
 });
 
+program.command('show <commitHash>').action(async commitHash => {
+    const brancher = new Brancher();
+    try {
+        const commitPath = path.join(brancher.objectsPath, commitHash);
+        if (!(await brancher.exists(commitPath))) {
+            console.log(`Commit ${commitHash} does not exist.`);
+            return;
+        }
+
+        const commitData = JSON.parse(await fs.readFile(commitPath, 'utf-8'));
+        console.log(`Commit: ${commitHash}`);
+        console.log(`Date: ${commitData.timeStamp}`);
+        console.log(`Message: ${commitData.message}`);
+        console.log('\nChanged Files:');
+        commitData.files.forEach(file => {
+            console.log(`- ${file.path}`);
+        });
+    } catch (error) {
+        console.error(`Error displaying commit: ${error.message}`);
+    }
+});
 
 program.command('branch <branchName>').action(async branchName => {
     const brancher = new Brancher();
@@ -246,7 +260,5 @@ program.command('clone <destination>').action(async destination => {
     const brancher = new Brancher();
     await brancher.clone(destination);
 });
-
-
 
 program.parse(process.argv);
