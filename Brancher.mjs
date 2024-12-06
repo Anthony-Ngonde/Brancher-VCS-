@@ -3,7 +3,6 @@ import path from 'path';
 import fs from 'fs/promises';
 import crypto from 'crypto';
 import { diffLines } from 'diff';
-import chalk from 'chalk';
 import { Command } from 'commander';
 
 const program = new Command();
@@ -11,10 +10,10 @@ const program = new Command();
 class Brancher {
     constructor(repoPath = '.') {
         this.repoPath = path.join(repoPath, '.brancher');
-        this.objectsPath = path.join(this.repoPath, 'objects'); // .brancher/objects
-        this.headPath = path.join(this.repoPath, 'HEAD'); // .brancher/HEAD
-        this.indexPath = path.join(this.repoPath, 'index'); // .brancher/index
-        this.refsPath = path.join(this.repoPath, 'refs'); // .brancher/refs
+        this.objectsPath = path.join(this.repoPath, 'objects'); 
+        this.headPath = path.join(this.repoPath, 'HEAD'); 
+        this.indexPath = path.join(this.repoPath, 'index'); 
+        this.refsPath = path.join(this.repoPath, 'refs'); 
         this.init();
     }
 

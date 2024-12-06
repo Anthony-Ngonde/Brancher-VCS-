@@ -1,5 +1,5 @@
 
-# Distributed Source Control System
+# Distributed Source Control System(Brancher)
 
 This project implements a distributed source control system inspired by Git. It supports essential version control operations such as initializing a repository, staging and committing files, viewing commit history, creating branches, merging branches and performing diffs between them. Additionally, it allows the user to clone a repository and ignore files from being tracked.
 
