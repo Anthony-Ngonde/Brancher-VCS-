@@ -27,8 +27,8 @@ Ignore files: Exclude specific files from being tracked by the repository.
 
 ## Installation
 Clone the repository and navigate to the project directory:
-git clone <repository-url>
-cd <project-directory>
+git clone (repository-url)
+cd (project-directory)
 
 Install dependencies:
 npm install
@@ -41,11 +41,11 @@ To initialize a new repository in the current directory:
 
 ### Add a File to the Staging Area
 To stage a file for commit:
-./Brancher.mjs add <file>
+./Brancher.mjs add (file)
 
 ### Commit Changes
 To commit staged changes with a message:
-./Brancher.mjs commit "<commit message>"
+./Brancher.mjs commit "commit message"
 
 ### View Commit History
 To view the commit history:
@@ -53,27 +53,27 @@ To view the commit history:
 
 ### Show Commit Details
 To view the details of a specific commit by its hash:
-./Brancher.mjs show <commitHash>
+./Brancher.mjs show (commitHash)
 
 ### Create a New Branch
 To create a new branch:
-./Brancher.mjs branch <branchName>
+./Brancher.mjs branch (branchName)
 
 ### Switch Branches
 To switch to an existing branch:
-./Brancher.mjs switch <branchName>
+./Brancher.mjs switch (branchName)
 
 ### Merge Branches
 To merge a branch into the current branch:
-./Brancher.mjs merge <branchName>
+./Brancher.mjs merge (branchName)
 
 ### Diff Between Branches
 To view the diff between the current branch and another branch:
-./Brancher.mjs diff <branchName>
+./Brancher.mjs diff (branchName)
 
 ### Clone a Repository
 To clone the repository to a specified destination:
-./Brancher.mjs clone <destination>
+./Brancher.mjs clone (destination)
 
 
 
