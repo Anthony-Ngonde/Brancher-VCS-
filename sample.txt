@@ -1,6 +1,6 @@
 Hey I am a test-updated-updated file
 that will be fed inside the brancher vcs
 
-I have made a change here
+I have made a change here. I have now updated the file again.
 
 More changes
